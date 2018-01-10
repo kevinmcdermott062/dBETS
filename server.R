@@ -1,60 +1,7 @@
-library(shiny)
-# library(shinyIncubator)
-library(ggplot2)
-library(reshape2)
-library(plyr)
-library(boot)
-library(mvtnorm)
-library(MASS)
-library(scales)
-library(RCurl)
-
-# dyn.load('~/ShinyApps/dBETS/splineFunctionsC.so')
 
 
-dyn.load('splineFunctionsC.so')
-dyn.load('ERB/ERBC.so')
-dyn.load('ERB/ERBCOne.so')
-dyn.load('modelBrkptC.so')
-dyn.load('modelBrkptCOne.so')
-dyn.load('DP082513.so')
-source('Functions.R')
-source('ModelFunctions.R')
-source('ModelFunctionsOne.R')
-source('ERB/ERBFunctions.R')
-source('ERB/ERBC.R')
-source('ERB/ERBOneBrkpt.R')
-source('Spline/plotSpline.r')
-source('Logistic/runLogistic.r')
-source('Logistic/runLogisticOne.r')
-source('Logistic/plotLogistic.r')
-source('Spline/runSpline.r')
-source('Spline/runSplineOne.r')
-source('Spline/plotSpline.r')
 
-
-# theme_old <- theme_update(
-#   axis.text.y=element_text(size=11, color='black'),
-#   axis.text.x=element_text(size=11, color='black'),
-#   axis.title.x=element_text(size=14, vjust=0.2),
-#   axis.title.y=element_text(size=14, vjust=0.2, angle=90),
-#   panel.background=element_rect(color='black', fill='grey93'),
-#   panel.grid.minor=element_blank()
-# )
-
-theme_old <- theme_update(axis.text.y=element_text(size=15, color='black'),
-                          axis.text.x=element_text(size=14, color='black'),
-                          axis.title.x=element_text(size=17, margin=margin(t=5)),
-                          axis.title.y=element_text(size=17, margin=margin(r=5),angle=90),
-                          panel.background=element_rect(color='black', fill='grey93'),
-                          panel.grid.minor=element_blank(),
-                          plot.title = element_text(size = 17, margin=margin(b=5)),
-                          legend.position='bottom',
-                          legend.key=element_rect(fill="white",colour="white"),
-                          legend.text = element_text(size = 16),
-                          legend.title=element_text(size=15))
-
-shinyServer(function(input, output, session) {
+server <- function(input, output, session){
   
   ### Reactive UI functions
   #ERB Panel 2
@@ -114,12 +61,13 @@ shinyServer(function(input, output, session) {
           if(url=='https://dbets.shinyapps.io/dBETS/data1.csv')
             url='data1.csv'
           if(grepl('https',url)==TRUE) stop ('https:// not supported, please use http://')
-          a1=read.csv(url,header=TRUE,stringsAsFactors=FALSE)
+          a1=read_csv(url)
         } else{      
           df <- input$file
           path <- df$datapath  
-          a1 <- read.csv(path, header=TRUE,stringsAsFactors=FALSE)
+          a1 <- read_csv(path)
         }
+        parms=parse_data(a1)
           
         xcens=rep(0,nrow(a1))
         ycens=rep(0,nrow(a1))
@@ -147,7 +95,7 @@ shinyServer(function(input, output, session) {
             DIA[i]=a1[i,2]
         }
         
-        MIC=as.numeric(MIC)
+        MIC=parms$MIC
         
         if(MICLog2==0)
           MIC<-log(MIC,2)
@@ -155,23 +103,23 @@ shinyServer(function(input, output, session) {
         if(sum(is.na(MIC))>1) stop('Problem converting MIC to log2 Scale!')
         
         MIC<<- MIC
-        DIA<<-as.numeric(DIA)
-        xcens<<-as.numeric(xcens)
-        ycens<<-as.numeric(ycens)
+        DIA<<-parms$DIA
+        xcens<<-parms$xcens
+        ycens<<-parms$ycens
         
         if(input$oneBrkpt==FALSE){
           MICBrkptL <<- as.numeric(input$MICBrkptL)
           MICBrkptU <<- as.numeric(input$MICBrkptU)
           if(MICBrkptL>=MICBrkptU) stop('Lower MIC Breakpoint must be smaller then Upper MIC Breakpoint')
-          descriptiveStat(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU)          
+          descriptiveStat(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU)
         }else{
-          MICBrkpt <<- as.numeric(input$MICBrkpt)+.5
+          MICBrkpt <<- as.numeric(input$MICBrkpt)
           descriptiveStatOne(MIC,DIA,xcens,ycens,MICBrkpt)
         }
                 
         
         
-        xgrid <<- seq(min(MIC)-3.5,max(MIC)+2.5,length=1200)
+        xgrid <<- seq(min(MIC)-1,max(MIC)+1,length=1000)
         
         ### ERB Panel 3
         output$D1ERB <- renderUI({
@@ -214,12 +162,12 @@ shinyServer(function(input, output, session) {
   output$plotData <- renderPlot({
     if(input$startGraph!=0){
       return(isolate({
-        convert=FALSE
-        if(input$miclogS=='1') convert=TRUE
+        print(input$miclogS)
+        print(input$FlipS)
         if(input$oneBrkpt==FALSE)
-          fit=basicPlot(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,flipGraph=input$FlipS,logConvert=convert)
+          fit=basicPlot(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,MICXaxis=input$FlipS,log2MIC=input$miclogS)
         else
-          fit=basicPlotOne(MIC,DIA,xcens,ycens,MICBrkpt,flipGraph=input$FlipS,logConvert=convert)
+          fit=basicPlotOne(MIC,DIA,xcens,ycens,MICBrkpt,MICXaxis=input$FlipS,log2MIC=input$miclogS)
         plot1 <<- fit
         plot(fit)
         invisible()
@@ -798,6 +746,6 @@ shinyServer(function(input, output, session) {
   })
   
   
-})
+}
 
 

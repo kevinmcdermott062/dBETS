@@ -1,7 +1,7 @@
 library(shiny)
 
 
-shinyUI(pageWithSidebar(
+ui=fluidPage(theme=shinytheme("cerulean"),
   
     
   # Application title
@@ -28,9 +28,11 @@ shinyUI(pageWithSidebar(
       conditionalPanel(condition = "input.oneBrkpt == false",
         br(),
         p(strong('MIC Breakpoints (log2 scale)')),
-        div(class="row-fluid",
-            div(class="span2", selectInput("MICBrkptL", "Lower (<=)", choices =seq(-8,8,by=1),selected=-1)),
-            div(class="span2",selectInput("MICBrkptU", "Upper (>=)", choices =seq(-8,8,by=1),selected=1))
+        fluidRow(
+          column(6,
+                 selectInput("MICBrkptL", "Lower (<=)", choices =seq(-8,8,by=1),selected=-1)),
+          column(6,
+                 selectInput("MICBrkptU", "Upper (>=)", choices =seq(-8,8,by=1),selected=1))
         )),
       conditionalPanel(condition = "input.oneBrkpt == true",
         br(),
@@ -42,10 +44,10 @@ shinyUI(pageWithSidebar(
       br(),
       conditionalPanel(condition = "input.downloadData!=0",
         br(),div("Graph Options: ", style="font-weight: bold"),br(),
-        div(class="row-fluid",
-            div(class="span2",selectInput("FlipS", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-            div(class="span2",selectInput(inputId='miclogS',label='Log2 Labels',choices=list('Yes'=1,'No'=0),selected=1))
-        ),br(),br(),br(),br(),
+        fluidRow(
+          column(6,selectInput("FlipS", "X-Axis:",list('MIC'=TRUE,'DIA'=FALSE),selected=TRUE)),
+          column(6,selectInput(inputId='miclogS',label='Log2 Labels',choices=list('Yes'=TRUE,'No'=FALSE),selected=TRUE))
+        ),
       conditionalPanel(condition="input.downloadData!=0",
         br(),actionButton('startGraph',strong('Plot Graph'))),
       conditionalPanel(condition="input.startGraph!=0",
@@ -332,7 +334,7 @@ shinyUI(pageWithSidebar(
          id='panel2'
     ))
   )
-))
+)
 
 
 
