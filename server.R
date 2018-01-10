@@ -1,6 +1,4 @@
 
-
-
 server <- function(input, output, session){
   
   ### Reactive UI functions

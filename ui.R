@@ -10,29 +10,26 @@ ui=fluidPage(theme=shinytheme("cosmo"),
   sidebarPanel(
     selectInput("Page", strong("Navigate"),list('Data Entry'=1,'Error-rate Bounded Method'=2,
         'Model-Based Approaches'=3),selected=1),
-    tags$style(type="text/css", '#Page { width: 70%;}'),
-    tags$style(".span2 {width: 100px; float: left; margin: 5px;}"),
+    # tags$style(type="text/css", '#Page { width: 70%;}'),
+    # tags$style(".span2 {width: 100px; float: left; margin: 5px;}"),
                      
     ### Load Data
     conditionalPanel(condition="input.Page==1",
-      HTML("<a class='btn' href='https://dbets.shinyapps.io/dBETS/'><b>Refresh / Clear</b></a>"),br(),br(),
+      HTML("<a class='btn' href='https://dbets.shinyapps.io/dBETS/'><b>Refresh / Clear</b></a>"),br(),
       wellPanel(                
       checkboxInput(inputId= "dataSource", label="Use a file stored on my local machine.", value=FALSE),
       conditionalPanel(condition = "input.dataSource == false",
-        textInput(inputId="url", label="File URL:", value="https://dbets.shinyapps.io/dBETS/data1.csv"),
-        tags$style(type='text/css', "#url { width: 95%; }"),
-        br()),
+        textInput(inputId="url", label="File URL:", value="https://dbets.shinyapps.io/dBETS/data1.csv")
+        # tags$style(type='text/css', "#url { width: 95%; }"),
+      ),
       conditionalPanel(condition = "input.dataSource == true",            
         fileInput(inputId = "file", label="")),
       selectInput(inputId="convertToLog", label="Are MIC values on log2 scale?",choices=list('Yes'=1,'No'=0),selected=1),
       conditionalPanel(condition = "input.oneBrkpt == false",
-        br(),
-        p(strong('MIC Breakpoints (log2 scale)')),
+        p('MIC Breakpoints (log2 scale)'),
         fluidRow(
-          column(6,
-                 selectInput("MICBrkptL", "Lower (<=)", choices =seq(-8,8,by=1),selected=-1)),
-          column(6,
-                 selectInput("MICBrkptU", "Upper (>=)", choices =seq(-8,8,by=1),selected=1))
+          column(6,selectInput("MICBrkptL", "Lower (<=)", choices =seq(-8,8,by=1),selected=-1)),
+          column(6,selectInput("MICBrkptU", "Upper (>=)", choices =seq(-8,8,by=1),selected=1))
         )),
       conditionalPanel(condition = "input.oneBrkpt == true",
         br(),
@@ -63,37 +60,37 @@ ui=fluidPage(theme=shinytheme("cosmo"),
         ### first panel
         conditionalPanel(condition="input.panel==2",
           conditionalPanel(condition = "input.oneBrkpt == false",
-            div(class="row-fluid",
-                 div(class="span2",selectInput("minWidth1", "Min Width:",choices =seq(2,8,by=1),selected=3)),
-                 div(class="span2",selectInput("maxWidth1", "Max Width:",choices =seq(3,20,by=1),selected=10))
+             fluidRow(
+               column(5,selectInput("minWidth1", "Min Width:",choices =seq(2,8,by=1),selected=3)),
+               column(5,selectInput("maxWidth1", "Max Width:",choices =seq(3,20,by=1),selected=10))
             ),
-            br(),br(),br(),br(),br(),
+            br(),
             div("Error Percentages within one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM11", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("M11", "Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("m11", "Minor:",choices =seq(0,60,by=.5),selected=40))
+            fluidRow(
+                column(4,selectInput("VM11", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+                column(4,selectInput("M11", "Major:",choices =seq(0,30,by=.5),selected=10)),
+                column(4,selectInput("m11", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
-            br(),br(),br(),br(),br(),
+            br(),
             div("Error Percentages outside one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM21", "Very Major:",choices =seq(0,10,by=.5),selected=2)),
-                div(class="span2",selectInput("M21", "Major:",choices =seq(0,10,by=.5),selected=2)),
-                div(class="span2",selectInput("m21", "Minor:",choices =seq(0,20,by=.5),selected=5))
+            fluidRow(
+              column(4,selectInput("VM21", "Very Major:",choices =seq(0,10,by=.5),selected=2)),
+              column(4,selectInput("M21", "Major:",choices =seq(0,10,by=.5),selected=2)),
+              column(4,selectInput("m21", "Minor:",choices =seq(0,20,by=.5),selected=5))
             ),
-            br(),br()),
+            br()),
           conditionalPanel(condition = "input.oneBrkpt == true",
-            div(class="row-fluid",
-                 div(class="span2",selectInput("VMOneBrkpt", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
-                 div(class="span2",selectInput("MOneBrkpt", "Major:",choices =seq(0,30,by=.5),selected=5))
+            fluidRow(
+              column(5,selectInput("VMOneBrkpt", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
+              column(5,selectInput("MOneBrkpt", "Major:",choices =seq(0,30,by=.5),selected=5))
             ),br()),
           actionButton('actionERB',strong('Run')),br(),br(),
           tags$style(type="text/css", '#actionERB { width: 100%;}'),
           conditionalPanel(condition="input.actionERB!=0",
              div("Graph Options: ", style="font-weight: bold"),          
-             div(class="row-fluid",
-                 div(class="span2",selectInput("FlipERB1", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-                 div(class="span2",selectInput('miclogE1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+             fluidRow(
+               column(5,selectInput("FlipERB1", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
+               column(5,selectInput('miclogE1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
              ),br(),
              actionButton('plotERB1',strong('Plot ERB Graph')), br(),
              conditionalPanel(condition="input.plotERB1!=0",
@@ -102,54 +99,54 @@ ui=fluidPage(theme=shinytheme("cosmo"),
         ### second panel
         conditionalPanel(condition="input.panel==3",
           conditionalPanel(condition = "input.oneBrkpt == false",
-             div(class="row-fluid",
-                 div(class="span2",uiOutput("minWidth2")),
-                 div(class="span2",uiOutput("maxWidth2"))
+             fluidRow(
+                 column(5,uiOutput("minWidth2")),
+                 column(5,uiOutput("maxWidth2"))
              ),
-             br(),br(),br(),br(),br(),
+             br(),
              div("Error Percentages within one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM12", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("M12", "Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("m12", "Minor:",choices =seq(0,60,by=.5),selected=40))
+            fluidRow(
+              column(4,selectInput("VM12", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("M12", "Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("m12", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
-            br(),br(),br(),br(),br(),
+            br(),
             div("Error Percentages outside one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM22", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("M22", "Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("m22", "Minor:",choices =seq(0,60,by=.5),selected=40))
+            fluidRow(
+              column(4,selectInput("VM22", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("M22", "Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("m22", "Minor:",choices =seq(0,60,by=.5),selected=40))
             )),
             conditionalPanel(condition = "input.oneBrkpt == true",
-               div(class="row-fluid",
-                   div(class="span2",selectInput("VMOneBrkpt2", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
-                   div(class="span2",selectInput("MOneBrkpt2", "Major:",choices =seq(0,30,by=.5),selected=5))
+              fluidRow(
+                column(5,selectInput("VMOneBrkpt2", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
+                column(5,selectInput("MOneBrkpt2", "Major:",choices =seq(0,30,by=.5),selected=5))
                )),
             br(),actionButton('actionBoot',strong('Run')),
-            tags$style(type="text/css", '#actionBoot { width: 100%;}'),
+            # tags$style(type="text/css", '#actionBoot { width: 100%;}'),
             conditionalPanel(condition="input.actionBoot!=0  & input.oneBrkpt == false",
               br(),actionButton('plotBootERB',strong('Plot Distribution DIA Breakpoints')))),
         
         ###third panel
         conditionalPanel(condition="input.panel==4",
           conditionalPanel(condition = "input.oneBrkpt == false",
-            div(class="row-fluid",
-                 div(class="span2",uiOutput("D1ERB")),
-                 div(class="span2",uiOutput("D2ERB"))
+            fluidRow(
+                column(5,uiOutput("D1ERB")),
+                column(5,uiOutput("D2ERB"))
             ),
-            br(),br(),br(),br(),br(),br(),
+            br(),
             div("Error Percentages within one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM13", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("M13", "Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("m13", "Minor:",choices =seq(0,60,by=.5),selected=40))
+            fluidRow(
+              column(4,selectInput("VM13", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("M13", "Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("m13", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
             br(),br(),br(),br(),br(),
             div("Error Percentages outside one of Intermediate Range"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VM23", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("M23", "Major:",choices =seq(0,30,by=.5),selected=10)),
-                div(class="span2",selectInput("m23", "Minor:",choices =seq(0,60,by=.5),selected=40))
+            fluidRow(
+              column(4,selectInput("VM23", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("M23", "Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("m23", "Minor:",choices =seq(0,60,by=.5),selected=40))
             )),
           conditionalPanel(condition = "input.oneBrkpt == true",
             HTML('<table border=0 width="100%"><tr bgcolor="#f5f5f5"><td>'),
@@ -158,17 +155,17 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             tags$style(type="text/css", '#D11ERB { width: 50%;}'),             
             br(),
             div("Error Percentages", style="font-weight: bold"),
-            div(class="row-fluid",
-                div(class="span2",selectInput("VMOneBrkpt3", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
-                div(class="span2",selectInput("MOneBrkpt3", "Major:",choices =seq(0,30,by=.5),selected=5))
+            fluidRow(
+              column(5,selectInput("VMOneBrkpt3", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
+              column(5,selectInput("MOneBrkpt3", "Major:",choices =seq(0,30,by=.5),selected=5))
             )),
           br(),actionButton('actionERBSelected',strong('Run')),
-          tags$style(type="text/css", '#actionERBSelected { width: 100%;}'),
+          # tags$style(type="text/css", '#actionERBSelected { width: 100%;}'),
           conditionalPanel(condition="input.actionERBSelected!=0",
             br(),div("Graph Options: ", style="font-weight: bold"),br(),
-            div(class="row-fluid",
-                div(class="span2",selectInput("FlipERB3", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-                div(class="span2",selectInput('miclogE3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+            fluidRow(
+              column(4,selectInput("FlipERB3", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
+              column(4,selectInput('miclogE3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
             ),
             br(),
             actionButton('plotERBSelected',strong('Plot ERB Selected Graph')), br(),
@@ -191,7 +188,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
                ),br(),br(),br(),br(),br()),
             selectInput("lossType1", "Loss Function:",list('Squared'=1),selected=1),br(),
             actionButton('actionLog',strong('Run')),
-            tags$style(type="text/css", '#actionLog { width: 100%;}'),
+            # tags$style(type="text/css", '#actionLog { width: 100%;}'),
           conditionalPanel(condition="input.actionLog!=0",
             br(),div("Graph Options: ", style="font-weight: bold"),br(),
             div(class="row-fluid",
@@ -202,8 +199,8 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             actionButton('actionLogPlot',strong('Plot Logistic Fit Graph'))),
           conditionalPanel(condition="input.actionLogPlot!=0",
             br(),downloadButton('downloadLog',strong('Download Logistic Graph')))),
-          tags$style(type="text/css", '#actionLog { width: 90%;}'),
-          tags$style(type="text/css", '#actionLogPlot { width: 90%;}'),
+          # tags$style(type="text/css", '#actionLog { width: 90%;}'),
+          # tags$style(type="text/css", '#actionLogPlot { width: 90%;}'),
              
          ### Second panel
           conditionalPanel(condition="input.panel2==3",
@@ -215,7 +212,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             
             selectInput("lossType2", "Loss Function:",list('Squared'=1),selected=1),br(),
             actionButton('actionSpline',strong('Run')),
-            tags$style(type="text/css", '#actionSpline { width: 100%;}'),
+            # tags$style(type="text/css", '#actionSpline { width: 100%;}'),
           conditionalPanel(condition="input.actionSpline!=0",
             br(),
             div(class="row-fluid",
@@ -226,8 +223,8 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             actionButton('actionSplinePlot',strong('Plot Spline Fit Graph'))),
           conditionalPanel(condition="input.actionSplinePlot!=0",
             br(),downloadButton('downloadSpline',strong('Download Spline Graph')))),
-          tags$style(type="text/css", '#actionSpline { width: 90%;}'),
-          tags$style(type="text/css", '#actionSplinePlot { width: 90%;}'),
+          # tags$style(type="text/css", '#actionSpline { width: 90%;}'),
+          # tags$style(type="text/css", '#actionSplinePlot { width: 90%;}'),
          
          ### Third Panel
          conditionalPanel(condition="input.panel2==4",
@@ -239,7 +236,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
               actionButton('actionCompare',strong('Plot Compare Fit Graph')),
               conditionalPanel(condition="input.actionCompare!=0",
                 br(),downloadButton('downloadCompare',strong('Download Graph')))),
-              tags$style(type="text/css", '#actionCompare { width: 90%;}'),
+              # tags$style(type="text/css", '#actionCompare { width: 90%;}'),
          
          ### Fourth Panel
          conditionalPanel(condition="input.panel2==5",
