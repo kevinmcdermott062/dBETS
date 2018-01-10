@@ -1,7 +1,7 @@
 library(shiny)
 
 
-ui=fluidPage(theme=shinytheme("cerulean"),
+ui=fluidPage(theme=shinytheme("cosmo"),
   
     
   # Application title
