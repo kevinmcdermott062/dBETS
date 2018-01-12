@@ -67,32 +67,6 @@ server <- function(input, output, session){
         }
         parms=parse_data(a1)
           
-        xcens=rep(0,nrow(a1))
-        ycens=rep(0,nrow(a1))
-        MIC=rep(NA,nrow(a1))
-        DIA=rep(NA,nrow(a1))
-        
-        #check for censoring
-        for(i in 1:nrow(a1)){
-          if(grepl('>',a1[i,1])==TRUE){
-            MIC[i]=substr(a1[i,1],2,nchar(a1[i,1]))
-            xcens[i]=1
-          }else if(grepl('<',a1[i,1])==TRUE){
-            MIC[i]=substr(a1[i,1],2,nchar(a1[i,1]))
-            xcens[i]=-1
-          }else
-            MIC[i]=a1[i,1]
-          
-          if(grepl('>',a1[i,2])==TRUE){
-            DIA[i]=substr(a1[i,2],2,nchar(a1[i,2]))
-            ycens[i]=1
-          }else if(grepl('<',a1[i,2])==TRUE){
-            DIA[i]=substr(a1[i,2],2,nchar(a1[i,2]))
-            ycens[i]=-1
-          }else
-            DIA[i]=a1[i,2]
-        }
-        
         MIC=parms$MIC
         
         if(MICLog2==0)
@@ -115,7 +89,6 @@ server <- function(input, output, session){
           descriptiveStatOne(MIC,DIA,xcens,ycens,MICBrkpt)
         }
                 
-        
         
         xgrid <<- seq(min(MIC)-1,max(MIC)+1,length=1000)
         
@@ -160,8 +133,6 @@ server <- function(input, output, session){
   output$plotData <- renderPlot({
     if(input$startGraph!=0){
       return(isolate({
-        print(input$miclogS)
-        print(input$FlipS)
         if(input$oneBrkpt==FALSE)
           fit=basicPlot(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,MICXaxis=input$FlipS,log2MIC=input$miclogS)
         else
@@ -190,17 +161,12 @@ server <- function(input, output, session){
         if(input$panel==2){
           if(exists('MIC')==FALSE) stop('Error!  Was data loaded?')
           if(input$oneBrkpt==FALSE){
-            VM1=as.numeric(input$VM11)
-            M1=as.numeric(input$M11)
-            m1=as.numeric(input$m11)
-            VM2=as.numeric(input$VM21)
-            M2=as.numeric(input$M21)
-            m2=as.numeric(input$m21)
-            minWidth=as.numeric(input$minWidth1)
-            maxWidth=as.numeric(input$maxWidth1)
-            parms=findBrkptsERB(MIC,DIA,MICBrkptL=MICBrkptL,MICBrkptU=MICBrkptU,
-                          VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2,
-                          minWidth=minWidth,maxWidth=maxWidth)
+            
+            parms=findBrkptsERB(MIC,DIA,VM1=as.numeric(input$VM11),M1=as.numeric(input$M11),m1=as.numeric(input$m11),
+                                VM2=as.numeric(input$VM21),M2=as.numeric(input$M21),m2=as.numeric(input$m21),
+                                MICBrkptL,MICBrkptU,minWidth=as.numeric(input$minWidth1),
+                                maxWidth=as.numeric(input$maxWidth1))
+            D1 <<- parms$D1; D2 <<- parms$D2
             output$D1ERB <- renderUI({
               selectInput("D1ERB", "Lower DIA Breakpoint:",choices =seq(6,60,by=1),selected=parms$D1)}
             )
@@ -208,9 +174,9 @@ server <- function(input, output, session){
               selectInput("D2ERB", "Upper DIA Breakpoint:",choices =seq(6,60,by=1),selected=parms$D2)}
             )
           }else{
-            VM=as.numeric(input$VMOneBrkpt)
-            M=as.numeric(input$MOneBrkpt)
-            parms=findBrkptsERBOne(MIC,DIA,VM,M,MICBrkpt)
+            parms=findBrkptsERBOne(MIC,DIA,VM=as.numeric(input$VMOneBrkpt),M=as.numeric(input$MOneBrkpt),
+                                   MICBrkpt)
+            DIABrkpt <<- parms$DIABrkpt
             output$D11ERB <- renderUI({
               selectInput("D11ERB", "DIA Breakpoint:",choices =seq(6,60,by=1),selected=parms$DIABrkpt)}
             )
@@ -226,25 +192,13 @@ server <- function(input, output, session){
       return(isolate({
         if(input$panel==2){
           if(input$oneBrkpt==FALSE){
-            VM1=as.numeric(input$VM11)
-            M1=as.numeric(input$M11)
-            m1=as.numeric(input$m11)
-            VM2=as.numeric(input$VM21)
-            M2=as.numeric(input$M21)
-            m2=as.numeric(input$m21)
-            minWidth=as.numeric(input$minWidth1)
-            maxWidth=as.numeric(input$maxWidth1)
-            convert=FALSE
-            if(input$miclogE1=='1') convert=TRUE
-            fit=PlotBrkptsERB2(MIC=MIC,DIA=DIA,xcens=xcens,ycens=ycens,MICBrkptL=MICBrkptL,MICBrkptU=MICBrkptU,
-                           VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2,
-                           minWidth=minWidth,maxWidth=maxWidth,flipGraph=input$FlipERB1,logConvert=convert)
+            fit=plotBrkPtsERB(MIC=MIC,DIA=DIA,xcens=xcens,ycens=ycens,MICBrkptL=MICBrkptL,MICBrkptU=MICBrkptU,
+                              DIABrkptL=D1,DIABrkptU=D2,
+                              MICXaxis=input$FlipERB1,log2MIC=input$miclogERB1)
           }else{
-            VM=as.numeric(input$VMOneBrkpt)
-            M=as.numeric(input$MOneBrkpt)
-            convert=FALSE
-            if(input$miclogE1=='1') convert=TRUE
-            fit=PlotBrkptsERB2One(MIC,DIA,xcens,ycens,VM,M,MICBrkpt,flipGraph=input$FlipERB1,logConvert=convert)
+            
+            fit=plotBrkPtsERBOne(MIC=MIC,DIA=DIA,xcens=xcens,ycens=ycens,
+                                 MICBrkpt,DIABrkpt,MICXaxis=input$FlipERB1,log2MIC=input$miclogERB1)
           }
           plot2 <<- fit
           plot(fit)
@@ -277,14 +231,15 @@ server <- function(input, output, session){
             m2=as.numeric(input$m22)
             minWidth=as.numeric(input$minWidth2)
             maxWidth=as.numeric(input$maxWidth2)
-            a1=bootStrapERB(MIC,DIA,MICBrkptL=MICBrkptL,MICBrkptU=MICBrkptU,
-                         VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2,
-                         minWidth=minWidth,maxWidth=maxWidth,session)
+            
+            a1=bootStrapERBShiny(MIC,DIA,MICBrkptL,MICBrkptU,VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2,
+                                  minWidth=minWidth,maxWidth=maxWidth)
+            
             bootData<<-a1
           }else{
             VM=as.numeric(input$VMOneBrkpt2)
             M=as.numeric(input$MOneBrkpt2)
-            a1=bootStrapERBOne(MIC,DIA,MICBrkpt,VM,M,session)
+            a1=bootStrapERBOneShiny(MIC,DIA,MICBrkpt,VM,M)
           }
           invisible()
         }

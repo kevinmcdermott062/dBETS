@@ -7,7 +7,6 @@ library(shinycssloaders)
 
 # library(devtools)
 # install_github('gdepalma/SuscTesting')
-# devtools::install_github('andrewsali/shinycssloaders')
 
 
 source('ui.R')

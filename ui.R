@@ -67,30 +67,30 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             br(),
             div("Error Percentages within one of Intermediate Range"),
             fluidRow(
-                column(4,selectInput("VM11", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+                column(4,selectInput("VM11", "VM:",choices =seq(0,30,by=.5),selected=10)),
                 column(4,selectInput("M11", "Major:",choices =seq(0,30,by=.5),selected=10)),
                 column(4,selectInput("m11", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
             br(),
             div("Error Percentages outside one of Intermediate Range"),
             fluidRow(
-              column(4,selectInput("VM21", "Very Major:",choices =seq(0,10,by=.5),selected=2)),
+              column(4,selectInput("VM21", "VM:",choices =seq(0,10,by=.5),selected=2)),
               column(4,selectInput("M21", "Major:",choices =seq(0,10,by=.5),selected=2)),
               column(4,selectInput("m21", "Minor:",choices =seq(0,20,by=.5),selected=5))
             ),
             br()),
           conditionalPanel(condition = "input.oneBrkpt == true",
             fluidRow(
-              column(5,selectInput("VMOneBrkpt", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
-              column(5,selectInput("MOneBrkpt", "Major:",choices =seq(0,30,by=.5),selected=5))
+              column(6,selectInput("VMOneBrkpt", "VM:",choices =seq(0,30,by=.5),selected=1)),
+              column(6,selectInput("MOneBrkpt", "Major:",choices =seq(0,30,by=.5),selected=5))
             ),br()),
           actionButton('actionERB',strong('Run')),br(),br(),
           tags$style(type="text/css", '#actionERB { width: 100%;}'),
           conditionalPanel(condition="input.actionERB!=0",
-             div("Graph Options: ", style="font-weight: bold"),          
+             div("Graph Options: ", style="font-weight: bold"),br(),          
              fluidRow(
-               column(5,selectInput("FlipERB1", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-               column(5,selectInput('miclogE1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+               column(5,selectInput("FlipERB1", "X-Axis:",list('MIC'=TRUE,'DIA'=FALSE),selected=TRUE)),
+               column(5,selectInput('miclogERB1', 'Log2 Labels',list('Yes'=TRUE,'No'=FALSE),selected=TRUE))
              ),br(),
              actionButton('plotERB1',strong('Plot ERB Graph')), br(),
              conditionalPanel(condition="input.plotERB1!=0",
@@ -106,20 +106,20 @@ ui=fluidPage(theme=shinytheme("cosmo"),
              br(),
              div("Error Percentages within one of Intermediate Range"),
             fluidRow(
-              column(4,selectInput("VM12", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("VM12", "VM:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("M12", "Major:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("m12", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
             br(),
             div("Error Percentages outside one of Intermediate Range"),
             fluidRow(
-              column(4,selectInput("VM22", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("VM22", "VM:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("M22", "Major:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("m22", "Minor:",choices =seq(0,60,by=.5),selected=40))
             )),
             conditionalPanel(condition = "input.oneBrkpt == true",
               fluidRow(
-                column(5,selectInput("VMOneBrkpt2", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
+                column(5,selectInput("VMOneBrkpt2", "VM:",choices =seq(0,30,by=.5),selected=1)),
                 column(5,selectInput("MOneBrkpt2", "Major:",choices =seq(0,30,by=.5),selected=5))
                )),
             br(),actionButton('actionBoot',strong('Run')),
@@ -137,14 +137,14 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             br(),
             div("Error Percentages within one of Intermediate Range"),
             fluidRow(
-              column(4,selectInput("VM13", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("VM13", "VM:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("M13", "Major:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("m13", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
             br(),br(),br(),br(),br(),
             div("Error Percentages outside one of Intermediate Range"),
             fluidRow(
-              column(4,selectInput("VM23", "Very Major:",choices =seq(0,30,by=.5),selected=10)),
+              column(4,selectInput("VM23", "VM:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("M23", "Major:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("m23", "Minor:",choices =seq(0,60,by=.5),selected=40))
             )),
@@ -156,7 +156,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
             br(),
             div("Error Percentages", style="font-weight: bold"),
             fluidRow(
-              column(5,selectInput("VMOneBrkpt3", "Very Major:",choices =seq(0,30,by=.5),selected=1)),
+              column(5,selectInput("VMOneBrkpt3", "VM:",choices =seq(0,30,by=.5),selected=1)),
               column(5,selectInput("MOneBrkpt3", "Major:",choices =seq(0,30,by=.5),selected=5))
             )),
           br(),actionButton('actionERBSelected',strong('Run')),
@@ -307,7 +307,6 @@ ui=fluidPage(theme=shinytheme("cosmo"),
     )),
   
   ###Model
-#   progressInit(),
   conditionalPanel(condition="input.Page==3",
        tabsetPanel(
          tabPanel("Logistic Model", list(p(strong("This function will take several minutes to run.")),
