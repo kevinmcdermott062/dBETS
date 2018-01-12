@@ -274,12 +274,13 @@ server <- function(input, output, session){
             VM2=as.numeric(input$VM23)
             M2=as.numeric(input$M23)
             m2=as.numeric(input$m23)
-            ERBGivenDIA(MIC,DIA,MICBrkptL=MICBrkptL,MICBrkptU=MICBrkptU,DIABrkptL=D1,DIABrkptU=D2,
-                        VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2)
+
+            ERBGivenDIA(MIC,DIA,MICBrkptL,MICBrkptU,D1,D2,VM1,M1,m1,VM2,M2,m2)
+            
           }else{
             VM=as.numeric(input$VMOneBrkpt3)
             M=as.numeric(input$MOneBrkpt3)
-            ERBGivenDIAOne(MIC,DIA,xcens,ycens,MICBrkpt,DIABrkpt=as.numeric(input$D11ERB)-.5,VM,M)
+            ERBGivenDIAOne(MIC,DIA,MICBrkpt,DIABrkpt=as.numeric(input$D11ERB),VM,M)
           }
           invisible()
         }
@@ -292,25 +293,14 @@ server <- function(input, output, session){
       return(isolate({
         if(input$panel==4){
           if(input$oneBrkpt==FALSE){
+            
             D1=as.numeric(input$D1ERB)
             D2=as.numeric(input$D2ERB)
-            VM1=as.numeric(input$VM13)
-            M1=as.numeric(input$M13)
-            m1=as.numeric(input$m13)
-            VM2=as.numeric(input$VM23)
-            M2=as.numeric(input$M23)
-            m2=as.numeric(input$m23)
-            convert=FALSE
-            if(input$miclogE3=='1') convert=TRUE
-            fit=PlotBrkptsERBGiven(MIC=MIC,DIA=DIA,xcens=xcens,ycens=ycens,MICBrkptL=MICBrkptL,
-                 MICBrkptU=MICBrkptU,D1=D1,D2=D2, VM1=VM1,M1=M1,m1=m1,VM2=VM2,M2=M2,m2=m2,
-                 flipGraph=input$FlipERB3,logConvert=convert)
+            fit=plotBrkPtsERB(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,D1,D2,MICXaxis=input$FlipERB3,log2MIC=input$miclogERB3)
+            
           }else{
-            VM=as.numeric(input$VMOneBrkpt3)
-            M=as.numeric(input$MOneBrkpt3)
-            convert=FALSE
-            if(input$miclogE3=='1') convert=TRUE
-            fit=PlotBrkptsERBGivenOne(MIC,DIA,xcens,ycens,VM,M,MICBrkpt,DIABrkpt=as.numeric(input$D11ERB)-.5,flipGraph=input$FlipERB3,logConvert=convert)
+            fit=plotBrkPtsERBOne(MIC,DIA,xcens,ycens,MICBrkpt,as.numeric(input$D11ERB),MICXaxis=input$FlipERB3,log2MIC=input$miclogERB3)
+            
           }
           plot3 <<- fit
           plot(fit)
@@ -334,45 +324,57 @@ server <- function(input, output, session){
       return(isolate({
         if(input$panel2==2){
           if(exists('MIC')==FALSE) stop('Error!  Was data loaded?')
-          if(input$oneBrkpt==FALSE){
-            minWidth=as.numeric(input$minWidthM1)
-            maxWidth=as.numeric(input$maxWidthM1)
-            parms=runLogistic(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,minWidth,maxWidth,session)
-            dataLog <<- data.frame(dens=parms$medianDensity,fit=parms$medFit)
-            medianDensityLog<<-parms$medianDensity
-            medFitLog<<-parms$medFit
-            lowerFitLog<<-parms$lowerFit
-            upperFitLog<<-parms$upperFit
-            modelBrkptLog<<-parms$a1
-            D1Log <<- parms$D1
-            D2Log <<- parms$D2
-            ### Model Panel 4
-            output$D1Set1 <- renderUI({
-              selectInput("D1Set1", "Set 1 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$D1)
+          
+            
+            ### Initialize
+            parms=initialize_parms_logistic(MIC,DIA,xcens)
+            xtrue=parms$xtrue
+            coefs=parms$coefs
+            ytrue=getylogtrue(coefs,xtrue)
+            
+            ### Run Model
+            log = capture.output({
+              parms=bayesian_mon_errors_logisticShiny(MIC,DIA,xcens,ycens,coefs,xtrue,ytrue,xgrid)
+              MICDensLog <<- parms$MICDens; fitMatLog <<- parms$fitMat
             })
-            output$D2Set1 <- renderUI({
-              selectInput('D2Set1', 'Set 1 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$D2)
-            })
-            output$D1Set2 <- renderUI({
-              selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$D1)
-            })
-            output$D2Set2 <- renderUI({
-              selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$D2)
-            })
-          }else{
-            parms=runLogisticOne(MIC,DIA,xcens,ycens,MICBrkpt,session)
-            dataLog <<- data.frame(dens=parms$medianDensity,fit=parms$medFit)
-            medianDensityLog<<-parms$medianDensity
-            medFitLog<<-parms$medFit
-            lowerFitLog<<-parms$lowerFit
-            upperFitLog<<-parms$upperFit
-            DIABrkpt <<- parms$DIABrkpt
-            output$D1One <- renderUI({
-              selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIABrkpt)
-            })
-            output$D2One <- renderUI({
-              selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIABrkpt+1)
-            })
+            
+            if(input$oneBrkpt==FALSE){
+              
+              parms=getDIABrkptsModel_twoMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkptL,MICBrkptU,
+                                                  minWidth = input$minWidthM1, maxWidth = input$maxWidthM1)
+              cat("-------DIA Breakpoints by Probability--------\n")
+              name.width <- max(sapply(names(parms), nchar))
+              print(format(parms, width = name.width, justify = "centre"),
+                    row.names = FALSE, quote = FALSE)
+              
+              ### Model Panel 4
+              output$D1Set1 <- renderUI({
+                selectInput("D1Set1", "Set 1 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1])
+              })
+              output$D2Set1 <- renderUI({
+                selectInput('D2Set1', 'Set 1 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1])
+              })
+              output$D1Set2 <- renderUI({
+                selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1]+1)
+              })
+              output$D2Set2 <- renderUI({
+                selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1]+1)
+              })
+            }else{
+            
+              parms=getDIABrkptsModel_oneMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkpt)
+              cat("-------DIA Breakpoints by Probability--------\n")
+              name.width <- max(sapply(names(parms), nchar))
+              names(parms) <- format(names(parms), width = name.width, justify = "centre")
+              print(format(parms, width = name.width, justify = "centre"),
+                    row.names = FALSE, quote = FALSE)
+              
+              output$D1One <- renderUI({
+                selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
+              })
+              output$D2One <- renderUI({
+                selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA[1]+1)
+              })
           }
           invisible()
         }
@@ -384,17 +386,13 @@ server <- function(input, output, session){
     if(input$actionLogPlot!=0){
       return(isolate({
         if(input$panel2==2){
-          convert=FALSE
-          if(input$miclogM1=='1') convert=TRUE
           if(input$oneBrkpt==FALSE){
-            fit=plotLogistic(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,D1Log,D2Log,
-               medianDensityLog,medFitLog,lowerFitLog,upperFitLog,
-               flipGraph=input$FlipMod1,logConvert=convert)
+            fit=output_graph_one_model_twoMIC(MICDensLog,fitMatLog,MIC,DIA,
+                                              xcens,ycens,xgrid,MICBrkptL,MICBrkptU)
 
           }else{
-            fit=plotLogisticOne(MIC,DIA,xcens,ycens,MICBrkpt,DIABrkpt-.5,
-                 medianDensityLog,medFitLog,lowerFitLog,upperFitLog,
-                 flipGraph=input$FlipMod1,logConvert=convert)
+            fit=output_graph_one_model_oneMIC(MICDensLog,fitMatLog,MIC,DIA,
+                                              xcens,ycens,xgrid,MICBrkpt)
           }
           plot4 <<- fit
           options(warn=-1)
@@ -405,16 +403,16 @@ server <- function(input, output, session){
     }else{return(invisible())}
   })
   
-  output$logisticBrkptPlot <- renderPlot({
-    if(input$actionLogPlot!=0 & input$oneBrkpt==FALSE){
-      return(isolate({
-        if(input$panel2==2){
-          plotBrkptModel(modelBrkptLog)
-          invisible()
-        }
-      }))
-    }else{return(NULL)}
-  })
+  # output$logisticBrkptPlot <- renderPlot({
+  #   if(input$actionLogPlot!=0 & input$oneBrkpt==FALSE){
+  #     return(isolate({
+  #       if(input$panel2==2){
+  #         plotBrkptModel(modelBrkptLog)
+  #         invisible()
+  #       }
+  #     }))
+  #   }else{return(NULL)}
+  # })
   
   output$downloadLog <- downloadHandler(
     filename=function(){paste('Logistic', Sys.Date(), '.png', sep='')},
@@ -501,16 +499,16 @@ server <- function(input, output, session){
     }else{return(invisible())}
   })
   
-  output$splineBrkptPlot <- renderPlot({
-    if(input$actionSplinePlot!=0 & input$oneBrkpt==FALSE){
-      return(isolate({
-        if(input$panel2==3){
-          plotBrkptModel(modelBrkptSpline)
-          invisible()
-        }
-      }))
-    }else{return(invisible())}
-  })
+  # output$splineBrkptPlot <- renderPlot({
+  #   if(input$actionSplinePlot!=0 & input$oneBrkpt==FALSE){
+  #     return(isolate({
+  #       if(input$panel2==3){
+  #         plotBrkptModel(modelBrkptSpline)
+  #         invisible()
+  #       }
+  #     }))
+  #   }else{return(invisible())}
+  # })
   
   output$downloadSpline <- downloadHandler(
     filename=function(){paste('Spline', Sys.Date(), '.png', sep='')},

@@ -37,7 +37,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
       checkboxInput(inputId= "oneBrkpt", label="One MIC Breakpoint", value=FALSE),
       br(),
       actionButton('downloadData',strong('Load Data and Get Started')),
-      tags$style(type='text/css', "#downloadData { width: 95%; }"),
+      tags$style(type='text/css', "#downloadData { width: 100%; }"),
       br(),
       conditionalPanel(condition = "input.downloadData!=0",
         br(),div("Graph Options: ", style="font-weight: bold"),br(),
@@ -141,7 +141,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
               column(4,selectInput("M13", "Major:",choices =seq(0,30,by=.5),selected=10)),
               column(4,selectInput("m13", "Minor:",choices =seq(0,60,by=.5),selected=40))
             ),
-            br(),br(),br(),br(),br(),
+            br(),
             div("Error Percentages outside one of Intermediate Range"),
             fluidRow(
               column(4,selectInput("VM23", "VM:",choices =seq(0,30,by=.5),selected=10)),
@@ -164,10 +164,9 @@ ui=fluidPage(theme=shinytheme("cosmo"),
           conditionalPanel(condition="input.actionERBSelected!=0",
             br(),div("Graph Options: ", style="font-weight: bold"),br(),
             fluidRow(
-              column(4,selectInput("FlipERB3", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-              column(4,selectInput('miclogE3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
-            ),
-            br(),
+              column(5,selectInput("FlipERB3", "X-Axis:",list('MIC'=TRUE,'DIA'=FALSE),selected=TRUE)),
+              column(5,selectInput('miclogERB3', 'Log2 Labels',list('Yes'=TRUE,'No'=FALSE),selected=TRUE))
+            ),br(),
             actionButton('plotERBSelected',strong('Plot ERB Selected Graph')), br(),
             conditionalPanel(condition="input.plotERBSelected!=0",
               br(),downloadButton('downloadERBSelected',strong('Download ERB Selected Graph')))))                   
@@ -182,20 +181,20 @@ ui=fluidPage(theme=shinytheme("cosmo"),
          #### first panel
           conditionalPanel(condition="input.panel2==2",
             conditionalPanel(condition = "input.oneBrkpt == false",             
-               div(class="row-fluid",
-                   div(class="span2",selectInput("minWidthM1", "Min Width:",choices =seq(2,8,by=1),selected=3)),
-                   div(class="span2",selectInput("maxWidthM1", "Max Width:",choices =seq(3,20,by=1),selected=10))
-               ),br(),br(),br(),br(),br()),
+               fluidRow(
+                 column(5,selectInput("minWidthM1", "Min Width:",choices =seq(2,8,by=1),selected=3)),
+                 column(5,selectInput("maxWidthM1", "Max Width:",choices =seq(3,20,by=1),selected=7))
+               ),br()),
             selectInput("lossType1", "Loss Function:",list('Squared'=1),selected=1),br(),
-            actionButton('actionLog',strong('Run')),
+            actionButton('actionLog',strong('Run')),br(),br(),
             # tags$style(type="text/css", '#actionLog { width: 100%;}'),
           conditionalPanel(condition="input.actionLog!=0",
-            br(),div("Graph Options: ", style="font-weight: bold"),br(),
-            div(class="row-fluid",
-                div(class="span2",selectInput("FlipMod1", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-                div(class="span2",selectInput('miclogM1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
-            ),
-            br(),
+            # br(),div("Graph Options: ", style="font-weight: bold"),br(),
+            # fluidRow(
+            #   column(5,selectInput("FlipMod1", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
+            #   column(5,selectInput('miclogM1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+            # ),
+            # br(),
             actionButton('actionLogPlot',strong('Plot Logistic Fit Graph'))),
           conditionalPanel(condition="input.actionLogPlot!=0",
             br(),downloadButton('downloadLog',strong('Download Logistic Graph')))),
@@ -205,21 +204,21 @@ ui=fluidPage(theme=shinytheme("cosmo"),
          ### Second panel
           conditionalPanel(condition="input.panel2==3",
             conditionalPanel(condition = "input.oneBrkpt == false",
-               div(class="row-fluid",
-                   div(class="span2",selectInput("minWidthM2", "Min Width:",choices =seq(2,8,by=1),selected=3)),
-                   div(class="span2",selectInput("maxWidthM2", "Max Width:",choices =seq(3,20,by=1),selected=10))
-               ),br(),br(),br(),br(),br()),
+               fluidRow(
+                 column(5,selectInput("minWidthM2", "Min Width:",choices =seq(2,8,by=1),selected=3)),
+                column(5,selectInput("maxWidthM2", "Max Width:",choices =seq(3,20,by=1),selected=7))
+               ),br()),
             
             selectInput("lossType2", "Loss Function:",list('Squared'=1),selected=1),br(),
-            actionButton('actionSpline',strong('Run')),
+            actionButton('actionSpline',strong('Run')),br(),br(),
             # tags$style(type="text/css", '#actionSpline { width: 100%;}'),
           conditionalPanel(condition="input.actionSpline!=0",
-            br(),
-            div(class="row-fluid",
-                div(class="span2",selectInput("FlipMod2", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-                div(class="span2",selectInput('miclogM2', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
-            ),
-            br(),
+            # br(),
+            # fluidRow(
+            #   column(5,selectInput("FlipMod2", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
+            #   column(5,selectInput('miclogM2', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+            # ),
+            # br(),
             actionButton('actionSplinePlot',strong('Plot Spline Fit Graph'))),
           conditionalPanel(condition="input.actionSplinePlot!=0",
             br(),downloadButton('downloadSpline',strong('Download Spline Graph')))),
@@ -242,16 +241,15 @@ ui=fluidPage(theme=shinytheme("cosmo"),
          conditionalPanel(condition="input.panel2==5",
           selectInput("modelSelect", "Model:",list('Spline'='spline','Logistic'='logistic'),selected='spline'),
           conditionalPanel(condition = "input.oneBrkpt == false",
-             div(class="row-fluid",
-                 div(class="span2",uiOutput("D1Set1")),
-                 div(class="span2",uiOutput("D2Set1"))
+             fluidRow(
+               column(5,uiOutput("D1Set1")),
+               column(5,uiOutput("D2Set1"))
              ),
             checkboxInput(inputId='includeSecondDIA', label='Include Second Set of DIA Breakpoints?',value=FALSE),
             conditionalPanel(condition="input.includeSecondDIA!=0",
-               div(class="row-fluid",
-                   div(class="span2",uiOutput("D1Set2")),
-                   div(class="span2",uiOutput("D2Set2")),br(),br(),br(),br(),br()
-
+              fluidRow(
+                column(5,uiOutput("D1Set2")),
+                column(5,uiOutput("D2Set2")),br()
                ))),
           conditionalPanel(condition = "input.oneBrkpt == true",
             uiOutput("D1One"),
@@ -311,8 +309,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
        tabsetPanel(
          tabPanel("Logistic Model", list(p(strong("This function will take several minutes to run.")),
                   br(),verbatimTextOutput("logistic"),br(),br(),
-                  plotOutput("logisticPlot",width = "800px", height = "600px"),
-                  plotOutput("logisticBrkptPlot",width = "700px", height = "500px")),value=2),
+                  plotOutput("logisticPlot",width = "800px", height = "600px")),value=2),
          tabPanel("Spline Model", list(p(strong("This function will take several minutes to run.")),
                    br(),
                    verbatimTextOutput("spline"),

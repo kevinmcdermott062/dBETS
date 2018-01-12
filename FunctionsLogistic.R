@@ -1,0 +1,67 @@
+bayesian_mon_errors_logisticShiny=function(xobs,yobs,xcens,ycens,coefs,xtrue,ytrue,xgrid,xsig=.707,ysig=2.121,
+                                      numIter=22000,burnin=14000,thin=4){
+  
+  # Create a Progress object
+  progress <- shiny::Progress$new()
+  on.exit(progress$close())
+  progress$set(message = "Running Model", value = 0)
+  
+  fitMat=matrix(nrow=numIter-burnin,ncol=length(xgrid))
+  MICDens=matrix(nrow=numIter-burnin,ncol=length(xgrid))
+  coefMat=matrix(nrow=numIter,ncol=4)
+  acceptCoef=rep(NA,numIter)
+  # xtrue_sav=matrix(nrow=numIter-burnin,ncol=length(xobs))
+  nobs=length(xobs)
+  
+  
+  for(iter in 1:numIter){
+    
+    if(iter%%1000==0) progress$inc(1/22)
+    
+    ## Update Density
+    if(iter %% 500==0 | iter==1){
+      if(iter==1){
+        parms=updateDens(xtrue,state=0,first=TRUE,niter=1000,xgrid)
+        mu=parms$mu; sigma=parms$sigma; p=parms$p; state=parms$state;
+        dens=parms$densEst; k=length(p); groups=parms$groups
+      }else{
+        parms=updateDens(xtrue,state,first=FALSE,niter=125,xgrid)
+        mu=parms$mu; sigma=parms$sigma; p=parms$p; state=parms$state;
+        dens=parms$densEst; k=length(p); groups=parms$groups
+      }
+    }
+    
+    ### Update xtrue (and corresponding ytrue)
+    if(iter %% 15==0 | iter==1){
+      parms=updateXtrueLog(xtrue,ytrue,coefs,xcens,ycens,xsig,ysig,xobs,yobs,
+                           nobs,mu,sigma,k,p,groups)
+      xtrue=parms$xtrue; ytrue=as.numeric(parms$ytrue)
+    }
+    
+    ### xupdate Coefs
+    parms=updateLogCoef(iter,coefs,xobs,yobs,xtrue,xcens,ycens,ytrue,xsig,ysig,coefMat)
+    acceptCoef[iter]=parms$accept; coefs=parms$coefs; ytrue=parms$ytrue
+    
+    
+    ###save
+    coefMat[iter,]=coefs
+    if(iter>burnin){
+      fit=getylogtrue(coefs,xgrid)
+      fitMat[iter-burnin,]=fit
+      MICDens[iter-burnin,]=dens
+    }
+    
+  }
+  
+  ### Thin
+  MICDens=MICDens[seq(1,nrow(MICDens),by=thin),]
+  fitMat=fitMat[seq(1,nrow(fitMat),by=thin),]
+  
+  return(list(MICDens=MICDens,fitMat=fitMat))
+  
+}
+
+
+
+
+
