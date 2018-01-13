@@ -9,7 +9,7 @@ getDIABrkptsModel_twoMICShiny=function(MICDens,gx,xgrid,DIA,MICBrkptL,MICBrkptU,
   DIA_Brkpts=matrix(NA,nrow=nrow(MICDens),ncol=2)
   for(i in 1:nrow(MICDens)){
     if(i %% 200==0) progress$inc(200/nrow(MICDens))
-    parms=findDIAC(DIA,xgrid,MICDens[i,],gx[i,],MICBrkptL,MICBrkptU,xsig,ysig,minWidth,maxWidth,minDIA,maxDIA)
+    parms=findDIAC(DIA,xgrid,MICDens[i,],gx[i,],MICBrkptL,MICBrkptU,xsig,ysig,minWidth,maxWidth)
     DIA_Brkpts[i,1]=parms$D1
     DIA_Brkpts[i,2]=parms$D2
   }

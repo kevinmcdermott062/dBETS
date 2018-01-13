@@ -227,11 +227,11 @@ ui=fluidPage(theme=shinytheme("cosmo"),
          
          ### Third Panel
          conditionalPanel(condition="input.panel2==4",
-              div(class="row-fluid",
-                  div(class="span2",selectInput("FlipMod3", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
-                  div(class="span2",selectInput('miclogM3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
-              ),
-              br(),
+              # div(class="row-fluid",
+              #     div(class="span2",selectInput("FlipMod3", "X-Axis:",list('MIC'='Yes','DIA'='No'),selected='No')),
+              #     div(class="span2",selectInput('miclogM3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
+              # ),
+              # br(),
               actionButton('actionCompare',strong('Plot Compare Fit Graph')),
               conditionalPanel(condition="input.actionCompare!=0",
                 br(),downloadButton('downloadCompare',strong('Download Graph')))),
@@ -317,6 +317,10 @@ ui=fluidPage(theme=shinytheme("cosmo"),
                    plotOutput("splineBrkptPlot",width = "700px", height = "500px")),value=3),
          tabPanel("Compare Model Fits", list(br(),
                    verbatimTextOutput("compareFits"),
+                   fluidRow(
+                     splitLayout(cellWidths = c("50%", "50%"), verbatimTextOutput("CompareDescLog"),
+                                 verbatimTextOutput("CompareDescSpline"))
+                   ),
                    plotOutput("compareFitsPlot",width = "800px", height = "600px")),value=4),
          tabPanel("DIA Classification Probability", list(
                  p(strong("MIC breakpoint(s) shifted left 0.5 units to account for rounding.")),

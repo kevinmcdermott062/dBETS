@@ -347,6 +347,9 @@ server <- function(input, output, session){
               print(format(parms, width = name.width, justify = "centre"),
                     row.names = FALSE, quote = FALSE)
               
+              parmsLogistic <<- parms
+              
+              
               ### Model Panel 4
               output$D1Set1 <- renderUI({
                 selectInput("D1Set1", "Set 1 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1])
@@ -429,44 +432,64 @@ server <- function(input, output, session){
       return(isolate({
         if(input$panel2==3){
           if(exists('MIC')==FALSE) stop('Error!  Was data loaded?')
+          
+          ### Initialize
+          parms=initialize_parms_spline(MIC,DIA,xcens,ycens,xgrid)
+          xtrue=parms$xtrue
+          coefs=parms$coefs
+          ytrue=as.numeric(parms$ytrue)
+          lowept=parms$lowept
+          upperept=parms$upperept
+          knotseq=parms$knotseq
+          bases=parms$bases
+          designMatrixGrid=parms$designMatrixGrid
+          
+          ### Run Model
+          log = capture.output({
+            parms=bayesian_mon_errors_splineShiny(MIC,DIA,xcens,ycens,coefs,xtrue,ytrue,xgrid,
+                                                  lowept,upperept,knotseq,bases,designMatrixGrid)
+            MICDensSpline <<- parms$MICDens; fitMatSpline <<- parms$fitMat
+          })
+          
+          
           if(input$oneBrkpt==FALSE){
-            minWidth=as.numeric(input$minWidthM2)
-            maxWidth=as.numeric(input$maxWidthM2)
-            parms=runSpline(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,minWidth,maxWidth,session)
-            dataSpline <<- data.frame(dens=parms$medianDensity,fit=parms$medFit)
-            medianDensitySpline<<-parms$medianDensity
-            medFitSpline<<-parms$medFit
-            lowerFitSpline<<-parms$lowerFit
-            upperFitSpline<<-parms$upperFit
-            modelBrkptSpline<<-parms$a1
-            D1Spline <<- parms$D1
-            D2Spline <<- parms$D2
+            
+            parms=getDIABrkptsModel_twoMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkptL,MICBrkptU,
+                                                minWidth = input$minWidthM2, maxWidth = input$maxWidthM2)
+            cat("-------DIA Breakpoints by Probability--------\n")
+            name.width <- max(sapply(names(parms), nchar))
+            print(format(parms, width = name.width, justify = "centre"),
+                  row.names = FALSE, quote = FALSE)
+            
+            parmsSpline <<- parms
+            
             ### Model Panel 4
             output$D1Set1 <- renderUI({
-              selectInput("D1Set1", "Set 1 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$D1)
+              selectInput("D1Set1", "Set 1 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1])
             })
             output$D2Set1 <- renderUI({
-              selectInput('D2Set1', 'Set 1 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$D2)
+              selectInput('D2Set1', 'Set 1 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1])
             })
             output$D1Set2 <- renderUI({
-              selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$D1)
+              selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1]+1)
             })
             output$D2Set2 <- renderUI({
-              selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$D2)
+              selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1]+1)
             })
           }else{
-            parms=runSplineOne(MIC,DIA,xcens,ycens,MICBrkpt,session)
-            dataSpline <<- data.frame(dens=parms$medianDensity,fit=parms$medFit)
-            medianDensitySpline<<-parms$medianDensity
-            medFitSpline<<-parms$medFit
-            lowerFitSpline<<-parms$lowerFit
-            upperFitSpline<<-parms$upperFit
-            DIABrkpt <<- parms$DIABrkp
+            
+            parms=getDIABrkptsModel_oneMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkpt)
+            cat("-------DIA Breakpoints by Probability--------\n")
+            name.width <- max(sapply(names(parms), nchar))
+            names(parms) <- format(names(parms), width = name.width, justify = "centre")
+            print(format(parms, width = name.width, justify = "centre"),
+                  row.names = FALSE, quote = FALSE)
+            
             output$D1One <- renderUI({
-              selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIABrkp)
+              selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
             })
             output$D2One <- renderUI({
-              selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIABrkp+1)
+              selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA[1]+1)
             })
           }
           invisible()
@@ -479,17 +502,15 @@ server <- function(input, output, session){
     if(input$actionSplinePlot!=0){
       return(isolate({
         if(input$panel2==3){
-          convert=FALSE
-          if(input$miclogM2=='1') convert=TRUE
           if(input$oneBrkpt==FALSE){
-            fit=plotSpline(MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,D1Spline,D2Spline,
-               medianDensitySpline,medFitSpline,lowerFitSpline,upperFitSpline,
-               flipGraph=input$FlipMod2,logConvert=convert)
+            fit=output_graph_one_model_twoMIC(MICDensSpline,fitMatSpline,MIC,DIA,
+                                              xcens,ycens,xgrid,MICBrkptL,MICBrkptU)
+            
           }else{
-            fit=plotSplineOne(MIC,DIA,xcens,ycens,MICBrkpt,DIABrkpt-.5,
-                     medianDensitySpline,medFitSpline,lowerFitSpline,upperFitSpline,
-                     flipGraph=input$FlipMod2,logConvert=convert)
+            fit=output_graph_one_model_oneMIC(MICDensSpline,fitMatSpline,MIC,DIA,
+                                              xcens,ycens,xgrid,MICBrkpt)
           }
+
           plot5 <<- fit
           options(warn=-1)
           plot(fit)
@@ -524,12 +545,46 @@ server <- function(input, output, session){
     if(input$actionCompare!=0){
       return(isolate({
         if(input$panel2==4){
-          if(exists('dataLog')==FALSE | exists('dataSpline')==FALSE)
+          if(exists('MICDensLog')==FALSE | exists('MICDensSpline')==FALSE)
             stop('Please run both the spline and logistic models first.')
-          if(exists('dataSpline')==TRUE & exists('dataLog')==TRUE)
+          if(exists('MICDensLog')==TRUE & exists('MICDensSpline')==TRUE)
             cat('Models found. Comparing fits....\n')  
           return(invisible())
         }
+      }))
+    }else{return(invisible())}
+  })
+  
+  output$CompareDescLog <- renderPrint({
+    
+    if(input$actionCompare!=0){
+      
+      return(isolate({
+        
+        cat("Logistic Model \n\n")
+        cat("-------DIA Breakpoints by Probability--------\n")
+        temp=parmsLogistic
+        name.width <- max(sapply(names(temp), nchar))
+        names(temp) <- format(names(temp), width = name.width, justify = "centre")
+        print(format(temp, width = name.width, justify = "centre"),
+              row.names = FALSE, quote = FALSE)
+      }))
+    }else{return(invisible())}
+  })
+  
+  output$CompareDescSpline <- renderPrint({
+    
+    if(input$actionCompare!=0){
+      
+      return(isolate({
+        
+        cat("Spline Model \n\n")
+        cat("-------DIA Breakpoints by Probability--------\n")
+        temp=parmsSpline
+        name.width <- max(sapply(names(temp), nchar))
+        names(temp) <- format(names(temp), width = name.width, justify = "centre")
+        print(format(temp, width = name.width, justify = "centre"),
+              row.names = FALSE, quote = FALSE)
       }))
     }else{return(invisible())}
   })
@@ -538,14 +593,15 @@ server <- function(input, output, session){
     if(input$actionCompare!=0){
       return(isolate({
         if(input$panel2==4){
-          if(exists('dataSpline')==TRUE & exists('dataLog')==TRUE){
-            convert=FALSE
-            if(input$miclogM3=='1') convert=TRUE
+          if(exists('MICDensLog')==TRUE & exists('MICDensSpline')==TRUE){
             if(input$oneBrkpt==FALSE){
-              fit=compareFitsPlot(dataSpline,dataLog,MIC,DIA,xcens,ycens,MICBrkptL,MICBrkptU,
-                flipGraph=input$FlipMod3,logConvert=convert)
+              plt=output_graph_compare_twoMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
+                                              MIC,DIA,xcens,ycens,xgrid,MICBrkptL,MICBrkptU)
+              grid::grid.draw(plt)
             }else{
-              fit=compareFitsPlotOne(dataSpline,dataLog,MIC,DIA,xcens,ycens,MICBrkpt,flipGraph=input$FlipMod3,logConvert=convert)
+              plt=output_graph_compare_oneMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
+                                              MIC,DIA,xcens,ycens,xgrid,MICBrkpt)
+              grid::grid.draw(plt)
             }
             plotC <<- fit
             options(warn=-1)
@@ -566,7 +622,7 @@ server <- function(input, output, session){
       dev.off()
     }
   )
-  
+
   
   ### Model Panel 4
   calcProb <- reactive({
