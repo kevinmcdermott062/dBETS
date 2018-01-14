@@ -342,7 +342,8 @@ server <- function(input, output, session){
               
               parms=getDIABrkptsModel_twoMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkptL,MICBrkptU,
                                                   minWidth = input$minWidthM1, maxWidth = input$maxWidthM1)
-              cat("-------DIA Breakpoints by Probability--------\n")
+              parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
+              cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
               name.width <- max(sapply(names(parms), nchar))
               print(format(parms, width = name.width, justify = "centre"),
                     row.names = FALSE, quote = FALSE)
@@ -366,7 +367,8 @@ server <- function(input, output, session){
             }else{
             
               parms=getDIABrkptsModel_oneMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkpt)
-              cat("-------DIA Breakpoints by Probability--------\n")
+              parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
+              cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
               name.width <- max(sapply(names(parms), nchar))
               names(parms) <- format(names(parms), width = name.width, justify = "centre")
               print(format(parms, width = name.width, justify = "centre"),
@@ -456,7 +458,8 @@ server <- function(input, output, session){
             
             parms=getDIABrkptsModel_twoMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkptL,MICBrkptU,
                                                 minWidth = input$minWidthM2, maxWidth = input$maxWidthM2)
-            cat("-------DIA Breakpoints by Probability--------\n")
+            parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
+            cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
             name.width <- max(sapply(names(parms), nchar))
             print(format(parms, width = name.width, justify = "centre"),
                   row.names = FALSE, quote = FALSE)
@@ -479,7 +482,8 @@ server <- function(input, output, session){
           }else{
             
             parms=getDIABrkptsModel_oneMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkpt)
-            cat("-------DIA Breakpoints by Probability--------\n")
+            parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
+            cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
             name.width <- max(sapply(names(parms), nchar))
             names(parms) <- format(names(parms), width = name.width, justify = "centre")
             print(format(parms, width = name.width, justify = "centre"),
@@ -595,13 +599,13 @@ server <- function(input, output, session){
         if(input$panel2==4){
           if(exists('MICDensLog')==TRUE & exists('MICDensSpline')==TRUE){
             if(input$oneBrkpt==FALSE){
-              plt=output_graph_compare_twoMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
+              fit=output_graph_compare_twoMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
                                               MIC,DIA,xcens,ycens,xgrid,MICBrkptL,MICBrkptU)
-              grid::grid.draw(plt)
+              # grid::grid.draw(plt)
             }else{
-              plt=output_graph_compare_oneMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
+              fit=output_graph_compare_oneMIC(MICDensLog,fitMatLog,MICDensSpline,fitMatSpline,
                                               MIC,DIA,xcens,ycens,xgrid,MICBrkpt)
-              grid::grid.draw(plt)
+              # grid::grid.draw(plt)
             }
             plotC <<- fit
             options(warn=-1)
@@ -634,14 +638,14 @@ server <- function(input, output, session){
               DIASet2=c(0,0)
               
               if(input$modelSelect=='spline')
-                if(exists('dataSpline')==FALSE)
+                if(exists('MICDensSpline')==FALSE)
                   stop('Run spline model first (second tab).\n')
               if(input$modelSelect=='logistic')
-                if(exists('dataLog')==FALSE)
+                if(exists('MICDensLog')==FALSE)
                   stop('Run logistic model first (first tab).\n')
               
-              if(input$modelSelect=='spline') a1=dataSpline
-              if(input$modelSelect=='logistic') a1=dataLog
+              if(input$modelSelect=='spline') a1=data.frame(fit=fitMatSpline,density=MICDensSpline)
+              if(input$modelSelect=='logistic') a1=data.frame(fit=fitMatLog,density=MICDensLog)
               
               DIASet1=c(as.numeric(input$D1Set1),as.numeric(input$D2Set1))
               if(input$includeSecondDIA!=0){
@@ -657,13 +661,13 @@ server <- function(input, output, session){
             }else{
               DIA2=0
               if(input$modelSelect=='spline')
-                if(exists('dataSpline')==FALSE)
+                if(exists('MICDensSpline')==FALSE)
                   stop('Run spline model first (second tab).\n')
               if(input$modelSelect=='logistic')
-                if(exists('dataLog')==FALSE)
+                if(exists('MICDensLog')==FALSE)
                   stop('Run logistic model first (first tab).\n')
-              if(input$modelSelect=='spline') a1=dataSpline
-              if(input$modelSelect=='logistic') a1=dataLog
+              if(input$modelSelect=='spline') a1=data.frame(fit=fitMatSpline,density=MICDensSpline)
+              if(input$modelSelect=='logistic') a1=data.frame(fit=fitMatLog,density=MICDensLog)
               
               DIA1=as.numeric(input$D1One)
               if(input$includeSecondDIAOne!=0){
