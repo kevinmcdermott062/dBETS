@@ -151,9 +151,9 @@ server <- function(input, output, session){
       png(file,width=1000,height=800,units='px')
       print(plot1)
       dev.off()
-    }
-  )  
-      
+    })    
+    
+
   ### ERB Panel 1
   output$ERBCalc <- renderPrint({
     if(input$actionERB!=0){
@@ -644,8 +644,10 @@ server <- function(input, output, session){
                 if(exists('MICDensLog')==FALSE)
                   stop('Run logistic model first (first tab).\n')
               
-              if(input$modelSelect=='spline') a1=data.frame(fit=fitMatSpline,density=MICDensSpline)
-              if(input$modelSelect=='logistic') a1=data.frame(fit=fitMatLog,density=MICDensLog)
+              if(input$modelSelect=='spline') a1 = data.frame(dens=apply(MICDensSpline,2,median),fit=apply(fitMatSpline,2,median))
+
+              if(input$modelSelect=='logistic') a1 = data.frame(dens=apply(MICDensLog,2,median),fit=apply(fitMatLog,2,median))
+
               
               DIASet1=c(as.numeric(input$D1Set1),as.numeric(input$D2Set1))
               if(input$includeSecondDIA!=0){
@@ -666,8 +668,10 @@ server <- function(input, output, session){
               if(input$modelSelect=='logistic')
                 if(exists('MICDensLog')==FALSE)
                   stop('Run logistic model first (first tab).\n')
-              if(input$modelSelect=='spline') a1=data.frame(fit=fitMatSpline,density=MICDensSpline)
-              if(input$modelSelect=='logistic') a1=data.frame(fit=fitMatLog,density=MICDensLog)
+              if(input$modelSelect=='spline') a1 = data.frame(dens=apply(MICDensSpline,2,median),fit=apply(fitMatSpline,2,median))
+
+              if(input$modelSelect=='logistic') a1 = data.frame(dens=apply(MICDensLog,2,median),fit=apply(fitMatLog,2,median))
+
               
               DIA1=as.numeric(input$D1One)
               if(input$includeSecondDIAOne!=0){
@@ -732,30 +736,6 @@ server <- function(input, output, session){
       dev.off()
     }
   )
-  
-  output$plotDist <- renderPlot({
-    if(input$actionProbDIA!=0){
-      return(isolate({
-        if(input$panel2==5){
-          
-          convert=FALSE
-          if(input$miclogM4=='1') convert=TRUE
-          
-          if(input$oneBrkpt==FALSE){
-            plotDist <<- plotUnderlyingDistibution(probDIAData,convert,MICBrkptL,MICBrkptU)
-          }else{
-            plotDist <<- plotUnderlyingDistibutionOne(probDIAData,convert,MICBrkpt)
-          }
-          
-          options(warn=-1)
-          plot(plotDist)
-          options(warn=1)
-          return(invisible())
-        }
-      }))
-    }else{return(invisible())}
-  })
-  
   
 }
 

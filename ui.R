@@ -326,8 +326,7 @@ ui=fluidPage(theme=shinytheme("cosmo"),
                  p(strong("MIC breakpoint(s) shifted left 0.5 units to account for rounding.")),
                  br(),                                
                  verbatimTextOutput("probDIA"),
-                 plotOutput("probDIAPlot",width = "800px", height = "600px"),
-                 plotOutput("plotDist",width = "800px", height = "600px")),value=5),
+                 plotOutput("probDIAPlot",width = "800px", height = "600px")),value=5),
          id='panel2'
     ))
   )
