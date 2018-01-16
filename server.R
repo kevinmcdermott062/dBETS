@@ -359,10 +359,10 @@ server <- function(input, output, session){
                 selectInput('D2Set1', 'Set 1 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1])
               })
               output$D1Set2 <- renderUI({
-                selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=parms$DIA_L[1]+1)
+                selectInput("D1Set2", "Set 2 Lower DIA Brkpt:",choices =seq(6,50,by=1),selected=as.numeric(parms$DIA_L[1])+1)
               })
               output$D2Set2 <- renderUI({
-                selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=parms$DIA_U[1]+1)
+                selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=as.numeric(parms$DIA_U[1])+1)
               })
             }else{
             
