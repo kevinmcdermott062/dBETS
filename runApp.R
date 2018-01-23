@@ -11,7 +11,7 @@ source('FunctionsSpline.R')
 
 # library(devtools)
 # install_github('gdepalma/SuscTesting')
-# 
+
 
 source('ui.R')
 source('server.R')

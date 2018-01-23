@@ -274,21 +274,39 @@ ui=fluidPage(theme=shinytheme("cosmo"),
   conditionalPanel(condition="input.Page==1",
     list(
       conditionalPanel("input.downloadData==0",
-        h5(strong('Welcome to dBETS software! (V 1.0)')),
-        div("App created by Glen DePalma and Bruce A. Craig (Department of Statistics, Purdue Univeristy)."),br(),
+        br(),
+        h5(strong('Welcome to dBETS software! (Version 1.5)')),
+        br(),
+        div(HTML("App created by Glen DePalma (<a href=https://github.com/gdepalma>https://github.com/gdepalma</a>) 
+                 and Bruce A. Craig (<a href=http://www.stat.purdue.edu/people/faculty/bacraig>http://www.stat.purdue.edu/people/faculty/bacraig</a>).")),br(),
         div(HTML("There is a navigational panel near the top left corner to jump between the three sections: 1) Data Entry, 
-            2) Error-Rate Bounded Method, and 3) Model-Based Approaches.  Also on each page is a left-side panel of user-specified inputs
+            2) Error-Rate Bounded Method, and 3) Model-Based Approaches.  On each page is a left-side panel of user-specified inputs
           and options.  Once these inputs are set, a click of a run button  (located on the panel below the inputs) activates the procedure.
-          The output will appear in the main section on the right once the procedure completes.")),br(),
-        div(HTML("Data can be uploaded via the local hard drive or from a URL. For information on how to format data for use with dBETS 
-            <a href=https://dbets.shinyapps.io/dBETS/Formatting_Data.pdf>click here.</a>  
-            Once the  ``Input Options / Load Data / Produce Descriptives'' button is activated the data are loaded, 
-            descriptive statistics are produced, and graphical options appear in the side panel.")),br(),
-        div(HTML("More detailed information about the software is available <a href=https://dbets.shinyapps.io/dBETS/dBets_Manual.pdf>here.</a>")),br(),
-          div("Please contact Glen DePalma, glen.depalma@gmail.com,  to report problems or suggestions."),br()),
+          The output will appear in the main section on the right once the procedure completes.  Data can be uploaded via the local hard drive or from a URL. For information on how to format data for use with dBETS 
+            <a href=https://dbets.shinyapps.io/dBETS/Formatting_Data.pdf>click here.</a>")),br(),
+        div(HTML("Please contact Glen DePalma, <a href=mailto:glen.depalma@gmail.com>glen.depalma@gmail.com</a>, to report problems or suggestions.")),br(),
+        div(HTML("<hr>")),
+        div(HTML("<u>Paper descibring the use of dBETS: </u>")),br(),
+        div(HTML("DePalma, Glen and Turnidge, John and Craig, Bruce A.  <b>Determination of disk diffusion susceptibility testing interpretive criteria using model-based analysis: development and implementation.</b>  <i>Diagnostic Microbiology & Infectious Disease.</i> 2017. 87[2] 143-149.")),
+        div(HTML("<a href=http://www.dmidjournal.com/article/S0732-8893(16)30044-X/pdf>http://www.dmidjournal.com/article/S0732-8893(16)30044-X/pdf</a>")),br(),
+        div(HTML("<u>Paper descibring the models behind dBETS: </u>")),br(),
+        div(HTML("DePalma, Glen and Craig, Bruce A.  <b>Bayesian monotonic errors-in-variables models with applications to pathogen susceptibility testing.</b> <i>Statistics in Medicine.</i> 2018. 37[3] 487-502. DOI: 10.1002/sim.7533.")),
+        div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29156492>https://www.ncbi.nlm.nih.gov/pubmed/29156492</a>")),br(),
+        div(HTML("<u>Papers citing dBETS: </u>")),br(),
+        div(HTML("Badger, S., Abraham, S., Saputra, S., Trott, D.J., Turnidge, J., Mitchell, T., Caraguel, C.G.B., Jordan, D. 
+          <b>Relative performance of antimicrobial susceptibility assays on clinical Escherichia coli isolates from animals.</b>
+          <i>Veterinary Microbiology.</i> 2018. 214 [56-64]"))
+        # div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29156492>https://www.ncbi.nlm.nih.gov/pubmed/29156492</a>"))
+        
+        
+        ),
       conditionalPanel("input.downloadData>0",br(),
         verbatimTextOutput("loadData"),
         plotOutput("plotData",width = "800px", height = "600px")))),
+  
+  
+  #\textbf{DePalma, Glen} and Craig, Bruce A.  \emph{Bayesian monotonic errors-in-variables models with applications to pathogen susceptibility testing.}  Statistics in Medicine. 2018. 37[3] 487-502. DOI: 10.1002/sim.7533.
+  # \textbf{DePalma, Glen} and Turnidge, John and Craig, Bruce A.  \emph{Determination of disk diffusion susceptibility testing interpretive criteria using model-based analysis: development and implementation.}  Diagnostic Microbiology \& Infectious Disease. 2017. 87[2] 143-149.
 
   ###ERB
   conditionalPanel(condition="input.Page==2",

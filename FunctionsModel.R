@@ -13,10 +13,12 @@ getDIABrkptsModel_twoMICShiny=function(MICDens,gx,xgrid,DIA,MICBrkptL,MICBrkptU,
     DIA_Brkpts[i,1]=parms$D1
     DIA_Brkpts[i,2]=parms$D2
   }
-  a1=as.data.frame(table(DIA_Brkpts[,1],DIA_Brkpts[,2]))
-  names(a1)=c('DIA_L','DIA_U','Freq')
-  a1 = a1 %>% arrange(desc(Freq)) %>% mutate(Percent=format(round(Freq/sum(Freq)*100),nsmall=2),
-                                             CumPerc=format(round(cumsum(Freq)/sum(Freq)*100),nsmall=2)) %>%
+  tmp=data.frame(DIA_L=DIA_Brkpts[,1],DIA_U=DIA_Brkpts[,2])
+  a1 = tmp %>% group_by(DIA_L,DIA_U) %>% summarize(Freq=n()) %>%
+    arrange(desc(Freq)) %>% ungroup()
+  
+  a1 =a1 %>%  mutate(Percent=round(Freq/sum(Freq)*100,2),
+           CumPerc=round(cumsum(Freq)/sum(Freq)*100,2)) %>%
     dplyr::select(-Freq)
   
   return(a1)
@@ -35,10 +37,12 @@ getDIABrkptsModel_oneMICShiny=function(MICDens,gx,xgrid,DIA,MICBrkpt,xsig=.707,y
     parms=findDIACOne(DIA,xgrid,MICDens[i,],gx[i,],MICBrkpt,xsig,ysig)
     DIA_Brkpt[i]=parms$DIABrkpt
   }
-  a1=as.data.frame(table(DIA_Brkpt))
-  names(a1)=c('DIA','Freq')
-  a1 = a1 %>% arrange(desc(Freq)) %>% mutate(Percent=format(round(Freq/sum(Freq)*100),nsmall=2),
-                                             CumPerc=format(round(cumsum(Freq)/sum(Freq)*100),nsmall=2)) %>%
+  tmp=as.data.frame(table(DIA_Brkpt))
+  a1 = tmp %>% group_by(DIA_Brkpt) %>% summarize(Freq=n()) %>%
+    arrange(desc(Freq)) %>% ungroup()
+  a1 = a1 %>%
+    mutate(Percent=round(Freq/sum(Freq)*100,2),
+           CumPerc=round(cumsum(Freq)/sum(Freq)*100,2)) %>%
     dplyr::select(-Freq)
   
   return(a1)

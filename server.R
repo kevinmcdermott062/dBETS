@@ -342,14 +342,11 @@ server <- function(input, output, session){
               
               parms=getDIABrkptsModel_twoMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkptL,MICBrkptU,
                                                   minWidth = input$minWidthM1, maxWidth = input$maxWidthM1)
-              parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
-              cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
-              name.width <- max(sapply(names(parms), nchar))
-              print(format(parms, width = name.width, justify = "centre"),
-                    row.names = FALSE, quote = FALSE)
+              parms=parms %>% dplyr::filter(Percent>=.05)
+              cat("-------DIA Breakpoints by Probability -------\n")
+              print(data.frame(parms))
               
               parmsLogistic <<- parms
-              
               
               ### Model Panel 4
               output$D1Set1 <- renderUI({
@@ -367,12 +364,11 @@ server <- function(input, output, session){
             }else{
             
               parms=getDIABrkptsModel_oneMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkpt)
-              parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
-              cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
-              name.width <- max(sapply(names(parms), nchar))
-              names(parms) <- format(names(parms), width = name.width, justify = "centre")
-              print(format(parms, width = name.width, justify = "centre"),
-                    row.names = FALSE, quote = FALSE)
+              parms=parms %>% dplyr::filter(Percent>=.05)
+              cat("-------DIA Breakpoints by Probability -------\n")
+              print(data.frame(parms))
+              
+              parmsLogistic <<- parms
               
               output$D1One <- renderUI({
                 selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
@@ -458,11 +454,9 @@ server <- function(input, output, session){
             
             parms=getDIABrkptsModel_twoMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkptL,MICBrkptU,
                                                 minWidth = input$minWidthM2, maxWidth = input$maxWidthM2)
-            parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
-            cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
-            name.width <- max(sapply(names(parms), nchar))
-            print(format(parms, width = name.width, justify = "centre"),
-                  row.names = FALSE, quote = FALSE)
+            parms=parms %>% dplyr::filter(Percent>=.05)
+            cat("-------DIA Breakpoints by Probability -------\n")
+            print(data.frame(parms))
             
             parmsSpline <<- parms
             
@@ -482,12 +476,11 @@ server <- function(input, output, session){
           }else{
             
             parms=getDIABrkptsModel_oneMICShiny(MICDensSpline,fitMatSpline,xgrid,DIA,MICBrkpt)
-            parms=parms %>% dplyr::filter(as.numeric(Percent)>=.01)
-            cat("-------DIA Breakpoints by Probability (percent >= 1)--------\n")
-            name.width <- max(sapply(names(parms), nchar))
-            names(parms) <- format(names(parms), width = name.width, justify = "centre")
-            print(format(parms, width = name.width, justify = "centre"),
-                  row.names = FALSE, quote = FALSE)
+            parms=parms %>% dplyr::filter(Percent>=.05)
+            cat("-------DIA Breakpoints by Probability -------\n")
+            print(data.frame(parms))
+            
+            parmsSpline <<- parms
             
             output$D1One <- renderUI({
               selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
@@ -567,11 +560,8 @@ server <- function(input, output, session){
         
         cat("Logistic Model \n\n")
         cat("-------DIA Breakpoints by Probability--------\n")
-        temp=parmsLogistic
-        name.width <- max(sapply(names(temp), nchar))
-        names(temp) <- format(names(temp), width = name.width, justify = "centre")
-        print(format(temp, width = name.width, justify = "centre"),
-              row.names = FALSE, quote = FALSE)
+        print(data.frame(parmsLogistic))
+
       }))
     }else{return(invisible())}
   })
@@ -584,11 +574,7 @@ server <- function(input, output, session){
         
         cat("Spline Model \n\n")
         cat("-------DIA Breakpoints by Probability--------\n")
-        temp=parmsSpline
-        name.width <- max(sapply(names(temp), nchar))
-        names(temp) <- format(names(temp), width = name.width, justify = "centre")
-        print(format(temp, width = name.width, justify = "centre"),
-              row.names = FALSE, quote = FALSE)
+        print(data.frame(parmsSpline))
       }))
     }else{return(invisible())}
   })
