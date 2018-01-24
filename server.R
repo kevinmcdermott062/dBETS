@@ -372,7 +372,7 @@ function(input, output, session){
                 selectInput('D2Set2', 'Set 2 Upper DIA Brkpt:',choices =seq(6,50,by=1),selected=as.numeric(parms$DIA_U[1])+1)
               })
             }else{
-            
+              
               parms=getDIABrkptsModel_oneMICShiny(MICDensLog,fitMatLog,xgrid,DIA,MICBrkpt)
               parms=parms %>% dplyr::filter(Percent>=.05)
               cat("-------DIA Breakpoints by Probability -------\n")
@@ -381,10 +381,10 @@ function(input, output, session){
               parmsLogistic <<- parms
               
               output$D1One <- renderUI({
-                selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
+                selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA_Brkpt[1])
               })
               output$D2One <- renderUI({
-                selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA[1]+1)
+                selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA_Brkpt[1]+1)
               })
           }
           invisible()
@@ -493,10 +493,10 @@ function(input, output, session){
             parmsSpline <<- parms
             
             output$D1One <- renderUI({
-              selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA[1])
+              selectInput("D1One", "DIABrkpt 1:",choices =seq(6,50,by=1),selected=parms$DIA_Brkpt[1])
             })
             output$D2One <- renderUI({
-              selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA[1]+1)
+              selectInput('D2One', 'DIABrkpt 2:',choices =seq(6,50,by=1),selected=parms$DIA_Brkpt[1]+1)
             })
           }
           invisible()

@@ -37,7 +37,7 @@ getDIABrkptsModel_oneMICShiny=function(MICDens,gx,xgrid,DIA,MICBrkpt,xsig=.707,y
     parms=findDIACOne(DIA,xgrid,MICDens[i,],gx[i,],MICBrkpt,xsig,ysig)
     DIA_Brkpt[i]=parms$DIABrkpt
   }
-  tmp=as.data.frame(table(DIA_Brkpt))
+  tmp=data.frame(DIA_Brkpt)
   a1 = tmp %>% group_by(DIA_Brkpt) %>% summarize(Freq=n()) %>%
     arrange(desc(Freq)) %>% ungroup()
   a1 = a1 %>%
