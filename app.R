@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 library(SuscTesting)
 library(BayesianMonoErrorModels)
+library(tidyverse)
 
 source('FunctionsERB.R')
 source('FunctionsModel.R')
