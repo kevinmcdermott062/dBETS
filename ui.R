@@ -195,9 +195,9 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
             #   column(5,selectInput('miclogM1', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
             # ),
             # br(),
-            actionButton('actionLogPlot',strong('Plot Logistic Fit Graph'))),
-          conditionalPanel(condition="input.actionLogPlot!=0",
-            br(),downloadButton('downloadLog',strong('Download Logistic Graph')))),
+            actionButton('actionLogPlot',strong('Plot Logistic Fit Graph')))),
+          # conditionalPanel(condition="input.actionLogPlot!=0",
+            # br(),downloadButton('downloadLog',strong('Download Logistic Graph')))),
           # tags$style(type="text/css", '#actionLog { width: 90%;}'),
           # tags$style(type="text/css", '#actionLogPlot { width: 90%;}'),
              
@@ -219,9 +219,9 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
             #   column(5,selectInput('miclogM2', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
             # ),
             # br(),
-            actionButton('actionSplinePlot',strong('Plot Spline Fit Graph'))),
-          conditionalPanel(condition="input.actionSplinePlot!=0",
-            br(),downloadButton('downloadSpline',strong('Download Spline Graph')))),
+            actionButton('actionSplinePlot',strong('Plot Spline Fit Graph')))),
+          # conditionalPanel(condition="input.actionSplinePlot!=0",
+            # br(),downloadButton('downloadSpline',strong('Download Spline Graph')))),
           # tags$style(type="text/css", '#actionSpline { width: 90%;}'),
           # tags$style(type="text/css", '#actionSplinePlot { width: 90%;}'),
          
@@ -232,9 +232,9 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
               #     div(class="span2",selectInput('miclogM3', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1))
               # ),
               # br(),
-              actionButton('actionCompare',strong('Plot Compare Fit Graph')),
-              conditionalPanel(condition="input.actionCompare!=0",
-                br(),downloadButton('downloadCompare',strong('Download Graph')))),
+              actionButton('actionCompare',strong('Plot Compare Fit Graph'))),
+              # conditionalPanel(condition="input.actionCompare!=0",
+                # br(),downloadButton('downloadCompare',strong('Download Graph')))),
               # tags$style(type="text/css", '#actionCompare { width: 90%;}'),
          
          ### Fourth Panel
@@ -261,10 +261,10 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
           br(),selectInput('miclogM4', 'Log2 Labels',list('Yes'=1,'No'=0),selected=1),
           tags$style(type="text/css", '#miclogM4 { width: 40%;}'),br(),br(),
           actionButton('actionProbDIA',strong('Run')),
-          tags$style(type="text/css", '#actionProbDIA { width: 100%;}'),
-          conditionalPanel(condition="input.actionProbDIA!=0",
-          br(),downloadButton('downloadProbDIA',strong('Download Graph')))),
-          tags$style(type="text/css", '#actionProbDIA { width: 90%;}')
+          tags$style(type="text/css", '#actionProbDIA { width: 100%;}'))
+          # conditionalPanel(condition="input.actionProbDIA!=0",
+          # br(),downloadButton('downloadProbDIA',strong('Download Graph')))),
+          # tags$style(type="text/css", '#actionProbDIA { width: 90%;}')
     ))
   ),
       
