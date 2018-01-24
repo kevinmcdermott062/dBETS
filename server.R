@@ -1,5 +1,15 @@
+library(tidyverse)
+library(shinythemes)
+library(SuscTesting)
+library(BayesianMonoErrorModels)
+library(shiny)
 
-server <- function(input, output, session){
+source('FunctionsERB.R')
+source('FunctionsModel.R')
+source('FunctionsLogistic.R')
+source('FunctionsSpline.R')
+
+function(input, output, session){
   
   ### Reactive UI functions
   #ERB Panel 2

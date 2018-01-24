@@ -1,0 +1,10 @@
+name: dbets
+title:
+username:
+account: dbets
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 11450
+bundleId: 1190009
+url: https://dbets.shinyapps.io/dBETS/
+when: 1516764432.22643
