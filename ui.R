@@ -1,7 +1,7 @@
 library(shiny)
 
 
-ui=fluidPage(theme=shinytheme("cosmo"),
+ui=fluidPage(theme=shinythemes::shinytheme("cosmo"),
   
     
   # Application title
@@ -277,14 +277,17 @@ ui=fluidPage(theme=shinytheme("cosmo"),
         br(),
         h5(strong('Welcome to dBETS software! (Version 1.5)')),
         br(),
-        div(HTML("App created by Glen DePalma (<a href=https://github.com/gdepalma>https://github.com/gdepalma</a>) 
+        div(HTML("Software package created by Glen DePalma (<a href=https://github.com/gdepalma>https://github.com/gdepalma</a>) 
                  and Bruce A. Craig (<a href=http://www.stat.purdue.edu/people/faculty/bacraig>http://www.stat.purdue.edu/people/faculty/bacraig</a>).")),br(),
+        div(HTML("The determination of diffusion test breakpoints has become a challenging issue due to the increasing resistance of microorganisms to antibiotics.   
+            dBETS (<b>d</b>iffusion <b>B</b>reakpoint <b>E</b>stimation <b>T</b>esting <b>S</b>oftware) helps clinicians  easily analyze data from susceptibility experiments through visualization, error-rate bounded, and model-based approaches.")),br(),
         div(HTML("There is a navigational panel near the top left corner to jump between the three sections: 1) Data Entry, 
             2) Error-Rate Bounded Method, and 3) Model-Based Approaches.  On each page is a left-side panel of user-specified inputs
           and options.  Once these inputs are set, a click of a run button  (located on the panel below the inputs) activates the procedure.
           The output will appear in the main section on the right once the procedure completes.  Data can be uploaded via the local hard drive or from a URL. For information on how to format data for use with dBETS 
             <a href=https://dbets.shinyapps.io/dBETS/Formatting_Data.pdf>click here.</a>")),br(),
-        div(HTML("Please contact Glen DePalma, <a href=mailto:glen.depalma@gmail.com>glen.depalma@gmail.com</a>, to report problems or suggestions.")),br(),
+        div(HTML("Please contact Glen DePalma, <a href=mailto:glen.depalma@gmail.com>glen.depalma@gmail.com</a>, to report problems or suggestions.  The code and helper packages are located 
+                 on Glen's GitHub page.")),br(),
         div(HTML("<hr>")),
         div(HTML("<u>Paper descibring the use of dBETS: </u>")),br(),
         div(HTML("DePalma, Glen and Turnidge, John and Craig, Bruce A.  <b>Determination of disk diffusion susceptibility testing interpretive criteria using model-based analysis: development and implementation.</b>  <i>Diagnostic Microbiology & Infectious Disease.</i> 2017. 87[2] 143-149.")),
