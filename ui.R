@@ -278,7 +278,7 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
         h5(strong('Welcome to dBETS software! (Version 1.5)')),
         br(),
         div(HTML("Software package created by Glen DePalma (<a href=https://github.com/gdepalma>https://github.com/gdepalma</a>) 
-                 and Bruce A. Craig (<a href=http://www.stat.purdue.edu/people/faculty/bacraig>http://www.stat.purdue.edu/people/faculty/bacraig</a>).")),br(),
+                 and Bruce A. Craig (<a href=http://www.stat.purdue.edu/people/faculty/bacraig>http://www.stat.purdue.edu/people/faculty/bacraig</a>), with advice from John Turnidge.")),br(),
         div(HTML("The determination of diffusion test breakpoints has become a challenging issue due to the increasing resistance of microorganisms to antibiotics.   
             dBETS (<b>d</b>iffusion <b>B</b>reakpoint <b>E</b>stimation <b>T</b>esting <b>S</b>oftware) helps clinicians  easily analyze data from susceptibility experiments through visualization, error-rate bounded, and model-based approaches.")),br(),
         div(HTML("There is a navigational panel near the top left corner to jump between the three sections: 1) Data Entry, 
