@@ -287,7 +287,7 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
           The output will appear in the main section on the right once the procedure completes.  Data can be uploaded via the local hard drive or from a URL. For information on how to format data for use with dBETS 
             <a href=https://dbets.shinyapps.io/dBETS/Formatting_Data.pdf>click here.</a>")),br(),
         div(HTML("Please contact Glen DePalma, <a href=mailto:glen.depalma@gmail.com>glen.depalma@gmail.com</a>, to report problems or suggestions.  The code and helper packages are located 
-                 on Glen's GitHub page.")),br(),
+                 on Glen's GitHub page. All code is under GPL-3 license (feel free to use, modify, and distribute; but source code must be made available).")),br(),
         div(HTML("<hr>")),
         div(HTML("<u>Paper descibring the use of dBETS: </u>")),br(),
         div(HTML("DePalma, Glen and Turnidge, John and Craig, Bruce A.  <b>Determination of disk diffusion susceptibility testing interpretive criteria using model-based analysis: development and implementation.</b>  <i>Diagnostic Microbiology & Infectious Disease.</i> 2017. 87[2] 143-149.")),
