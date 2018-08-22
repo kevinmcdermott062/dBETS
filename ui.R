@@ -294,12 +294,13 @@ fluidPage(theme=shinythemes::shinytheme("cosmo"),
         div(HTML("<a href=http://www.dmidjournal.com/article/S0732-8893(16)30044-X/pdf>http://www.dmidjournal.com/article/S0732-8893(16)30044-X/pdf</a>")),br(),
         div(HTML("<u>Paper describing the models behind dBETS: </u>")),br(),
         div(HTML("DePalma, Glen and Craig, Bruce A.  <b>Bayesian monotonic errors-in-variables models with applications to pathogen susceptibility testing.</b> <i>Statistics in Medicine.</i> 2018. 37[3] 487-502. DOI: 10.1002/sim.7533.")),
-        div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29156492>https://www.ncbi.nlm.nih.gov/pubmed/29156492</a>")),br(),
+        div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29156492>https://www.ncbi.nlm.nih.gov/pubmed/29156492</a>")),
+        div(HTML("<a href=https://arxiv.org/abs/1806.06974>https://arxiv.org/abs/1806.06974</a>")),br(),
         div(HTML("<u>Papers citing dBETS: </u>")),br(),
         div(HTML("Badger, S., Abraham, S., Saputra, S., Trott, D.J., Turnidge, J., Mitchell, T., Caraguel, C.G.B., Jordan, D. 
           <b>Relative performance of antimicrobial susceptibility assays on clinical Escherichia coli isolates from animals.</b>
-          <i>Veterinary Microbiology.</i> 2018. 214 [56-64]"))
-        # div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29156492>https://www.ncbi.nlm.nih.gov/pubmed/29156492</a>"))
+          <i>Veterinary Microbiology.</i> 2018. 214 [56-64]")),
+        div(HTML("<a href=https://www.ncbi.nlm.nih.gov/pubmed/29408033>https://www.ncbi.nlm.nih.gov/pubmed/29408033</a>"))
         
         
         ),
